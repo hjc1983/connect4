@@ -84,16 +84,14 @@ namespace Connect4_Console
 
         public void DisplayBoard(string[,] board)
         {
-            int i, ix;
 
-            for (i = 0; i < BoardRows; i++)
+            for (int row = BoardRows - 1; row >= 0; row--)
             {
                 Console.Write("|");
-                for (ix = 0; ix < BoardColumns; ix++)
+                for (int col = 0; col < BoardColumns;col++)
                 {
-                    Console.Write(board[i, ix]);
+                    Console.Write(board[row, col]);
                 }
-
                 Console.Write("| \n");
             }
             Console.WriteLine("\n");
