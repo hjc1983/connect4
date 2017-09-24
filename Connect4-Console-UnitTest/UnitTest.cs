@@ -23,18 +23,18 @@ namespace Connect4_Console_UnitTest
         }
 
 
-        [TestMethod]
-        public void ValidateGameUserinput()
-        {
-            Assert.IsFalse(Program.ValidateGameUserinput("aaa"));
-            Assert.IsFalse(Program.ValidateGameUserinput("1 a"));
-            Assert.IsFalse(Program.ValidateGameUserinput("a 2"));
-            Assert.IsFalse(Program.ValidateGameUserinput("@ 2"));
-            Assert.IsFalse(Program.ValidateGameUserinput("ab  3"));
-            Assert.IsFalse(Program.ValidateGameUserinput("2 3 @"));
-            Assert.IsTrue(Program.ValidateGameUserinput(" 2 3 "));
-            Assert.IsTrue(Program.ValidateGameUserinput("5 5"));
-        }
+        //[TestMethod]
+        //public void ValidateGameUserinput()
+        //{
+        //    Assert.IsFalse(Program.ValidateGameUserinput("aaa"));
+        //    Assert.IsFalse(Program.ValidateGameUserinput("1 a"));
+        //    Assert.IsFalse(Program.ValidateGameUserinput("a 2"));
+        //    Assert.IsFalse(Program.ValidateGameUserinput("@ 2"));
+        //    Assert.IsFalse(Program.ValidateGameUserinput("ab  3"));
+        //    Assert.IsFalse(Program.ValidateGameUserinput("2 3 @"));
+        //    Assert.IsTrue(Program.ValidateGameUserinput(" 2 3 "));
+        //    Assert.IsTrue(Program.ValidateGameUserinput("5 5"));
+        //}
 
         [TestMethod]
         [ExpectedException(typeof (ApplicationException), "No more room in this column.")]

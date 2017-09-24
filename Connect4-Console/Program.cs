@@ -2,26 +2,59 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
+
 namespace Connect4_Console
 {
     public class Program
     {
-        public static int BoardRows { get; set; }
-        public static int BoardColumns { get; set; }
+        public static int BoardRows
+        {
+            get
+            {
+                return string.IsNullOrEmpty(Helper.ReadSetting("Rows")) ? 5 : Convert.ToInt32(Helper.ReadSetting("Rows"));
+            }
+        }
+        public static int BoardColumns {
+            get
+            {
+                return string.IsNullOrEmpty(Helper.ReadSetting("Columns")) ? 5 : Convert.ToInt32(Helper.ReadSetting("Columns"));
+            }
+        }
         public string[,] Board;
         public static string Empty = "O";
-        public static string Red = "R";
-        public static string Yellow = "Y";
+
+        public static string Red
+        {
+            get
+            {
+                return string.IsNullOrEmpty(Helper.ReadSetting("Gamer1Symbol"))? "R": Helper.ReadSetting("Gamer1Symbol");
+            }
+        }
+        public static string Yellow
+        {
+            get
+            {
+                return string.IsNullOrEmpty(Helper.ReadSetting("Gamer2Symbol")) ? "Y" : Helper.ReadSetting("Gamer2Symbol");
+            }
+        }
         private string currentGamer = Red;
         private string winner = "";
 
-        public Program(int rows = 5, int cols = 5)
+        private static int DiscToWin
         {
-            Board = new string[BoardRows = rows, BoardColumns = cols];
-            // populating empty board       
-            for (int row = 0; row < rows; row++)
+            get
             {
-                for (int column = 0; column < cols; column++)
+                return string.IsNullOrEmpty(Helper.ReadSetting("DiscsToWin")) ? 4 : Convert.ToInt32(Helper.ReadSetting("DiscsToWin"));
+            }
+        }
+
+        public Program()
+        {
+            Board = new string[BoardRows, BoardColumns];
+            // populating empty board       
+            for (int row = 0; row < BoardRows; row++)
+            {
+                for (int column = 0; column < BoardColumns; column++)
                 {
                     Board[row, column] = Empty;
                 }
@@ -62,8 +95,10 @@ namespace Connect4_Console
                 Console.WriteLine("Not a valid input, please try again.");
                 return false;
             }
-            BoardRows = rows;
-            BoardColumns = cols;
+            
+            Helper.AddUpdateAppSettings("Rows", rows.ToString());
+            Helper.AddUpdateAppSettings("Columns", cols.ToString());
+
             return true;
         }
 
@@ -94,6 +129,8 @@ namespace Connect4_Console
 
         public bool IsFinished()
         {
+            if (!string.IsNullOrEmpty(winner)) return true;
+
             return CountDiscsOnBoard() == BoardRows * BoardColumns;
         }
 
@@ -104,7 +141,7 @@ namespace Connect4_Console
 
         private void IsWinner(int row, int col)
         {
-            string pattern = @".*"+ currentGamer + "{4}.*"; //@"{.*R{4}.*}";
+            string pattern = @".*"+ currentGamer + "{"+ DiscToWin + "}.*"; //@"{.*R{4}.*}";
             Regex regex = new Regex(pattern);
             StringBuilder sb = new StringBuilder();
             for (var i = 0; i < BoardRows; i++)
@@ -144,20 +181,36 @@ namespace Connect4_Console
             Console.WriteLine("\n");
         }
 
+
+
         static void Main(string[] args)
         {
-            Console.Write("Enter number of rows/cols: ");
 
-            while (!Program.ValidateGameUserinput(Console.ReadLine())) ;
+            Console.WriteLine("let's play connect 4: <press a key to begin or '9' to config>");
+            var options= Console.ReadLine();
+            if (options == "9")
+            {
+                Console.WriteLine("Config: ");
+                Console.WriteLine("=======================");
+                Console.Write("Enter number of rows/cols: ");
+                while (!Program.ValidateGameUserinput(Console.ReadLine()));
 
-            Console.WriteLine(BoardRows + " x " + BoardColumns);
-            Program p = new Program(BoardRows, BoardColumns);
+
+            }
+            
+            //Console.Write("Enter number of rows/cols: ");
+            //while (!Program.ValidateGameUserinput(Console.ReadLine())) ;
+
+            //Console.WriteLine(BoardRows + " x " + BoardColumns);
+            Program p = new Program();
 
             while (!p.IsFinished())
             {
                 Console.Write(p.GetCurrentGamer() +", where would you like to place your next disc?\n");
                 p.InsertDiscInColumn(Convert.ToInt32(Console.ReadLine()));
             }
+
+            Console.WriteLine(p.GetWinner()+ ", You have won!"); 
 
             Console.Read();
         }
