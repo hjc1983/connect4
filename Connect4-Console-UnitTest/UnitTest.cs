@@ -18,8 +18,8 @@ namespace Connect4_Console_UnitTest
         public void IsNotANewGame()
         {
             Program p = new Program();
-            p.Board[4, 1] = "R"; //manually inserted
-            Assert.AreNotEqual(Program.BoardRows * Program.BoardColumns, p.CountDiscsOnBoard());
+            p.InsertDiscInColumn(1);
+            Assert.AreEqual(1, p.CountDiscsOnBoard());
         }
 
 
@@ -57,6 +57,22 @@ namespace Connect4_Console_UnitTest
 
             p.InsertDiscInColumn(1);
             Assert.Fail("Column is full");
+        }
+
+        [TestMethod]
+        public void GameStartedwithRed()
+        {
+            Program p = new Program();
+            Assert.AreEqual(Program.Red, p.GetCurrentGamer());
+        }
+
+        [TestMethod]
+        public void GameStartedwithRedThenYellowsTurn()
+        {
+            Program p = new Program();
+            p.InsertDiscInColumn(1);
+            
+            Assert.AreEqual(Program.Yellow, p.GetCurrentGamer());
         }
     }
 }

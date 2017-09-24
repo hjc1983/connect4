@@ -10,6 +10,7 @@ namespace Connect4_Console
         public static string Empty = "O";
         public static string Red = "R";
         public static string Yellow = "Y";
+        private string CurrentGamer = Red;
 
         public Program(int rows = 5, int cols = 5)
         {
@@ -65,19 +66,29 @@ namespace Connect4_Console
 
         public int InsertDiscInColumn(int column)
         {
-          
             int row = CountDiscsInColumn(column);
 
             if (row == BoardRows)
                 throw new ApplicationException("Column is full");
 
-            Board[row, column] = "A";
+            Board[row, column] = CurrentGamer;
             DisplayBoard(Board);
-            
+            SwitchGamer();
+
             return row;
         }
-        
-        public bool isFinished()
+
+        public string GetCurrentGamer()
+        {
+            return CurrentGamer;
+        }
+
+        private void SwitchGamer()
+        {
+            CurrentGamer = (Red == CurrentGamer) ? Yellow : Red;
+        }
+
+        public bool IsFinished()
         {
             return CountDiscsOnBoard() == BoardRows * BoardColumns;
         }
@@ -106,9 +117,9 @@ namespace Connect4_Console
             Console.WriteLine(BoardRows + " x " + BoardColumns);
             Program p = new Program(BoardRows, BoardColumns);
 
-            while (!p.isFinished())
+            while (!p.IsFinished())
             {
-                Console.Write("Where would you like to place your next disc?\n");
+                Console.Write(p.GetCurrentGamer() +", where would you like to place your next disc?\n");
                 p.InsertDiscInColumn(Convert.ToInt32(Console.ReadLine()));
             }
 
