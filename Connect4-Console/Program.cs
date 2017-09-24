@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Connect4_Console
 {
@@ -10,7 +12,8 @@ namespace Connect4_Console
         public static string Empty = "O";
         public static string Red = "R";
         public static string Yellow = "Y";
-        private string CurrentGamer = Red;
+        private string currentGamer = Red;
+        private string winner = "";
 
         public Program(int rows = 5, int cols = 5)
         {
@@ -66,13 +69,14 @@ namespace Connect4_Console
 
         public int InsertDiscInColumn(int column)
         {
-            int row = CountDiscsInColumn(column);
+            int row = CountDiscsInColumn(column-1);
 
             if (row == BoardRows)
                 throw new ApplicationException("Column is full");
 
-            Board[row, column] = CurrentGamer;
+            Board[row, column-1] = currentGamer;
             DisplayBoard(Board);
+            IsWinner(row, column-1);
             SwitchGamer();
 
             return row;
@@ -80,18 +84,50 @@ namespace Connect4_Console
 
         public string GetCurrentGamer()
         {
-            return CurrentGamer;
+            return currentGamer;
         }
 
         private void SwitchGamer()
         {
-            CurrentGamer = (Red == CurrentGamer) ? Yellow : Red;
+            currentGamer = (Red == currentGamer) ? Yellow : Red;
         }
 
         public bool IsFinished()
         {
             return CountDiscsOnBoard() == BoardRows * BoardColumns;
         }
+
+        public string GetWinner()
+        {
+            return winner;
+        }
+
+        private void IsWinner(int row, int col)
+        {
+            string pattern = @".*"+ currentGamer + "{4}.*"; //@"{.*R{4}.*}";
+            Regex regex = new Regex(pattern);
+            StringBuilder sb = new StringBuilder();
+            for (var i = 0; i < BoardRows; i++)
+            { 
+                sb.Append(Board[i, col]); //Vertical
+            }
+            if (regex.IsMatch(sb.ToString()))
+            {
+                winner = GetCurrentGamer();
+            }
+            
+            
+            sb = new StringBuilder();
+            for (var i = 0; i < BoardColumns; i++)
+            {
+                sb.Append(Board[row, i]); //Horizontal
+            }
+            if (regex.IsMatch(sb.ToString()))
+            {
+                winner = GetCurrentGamer();
+            }
+        }
+
 
         public void DisplayBoard(string[,] board)
         {

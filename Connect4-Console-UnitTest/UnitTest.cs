@@ -37,7 +37,7 @@ namespace Connect4_Console_UnitTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ApplicationException), "No more room in this column.")]
+        [ExpectedException(typeof (ApplicationException), "No more room in this column.")]
         public void ValidateInsertDiscInColumn()
         {
             Program p = new Program();
@@ -71,8 +71,40 @@ namespace Connect4_Console_UnitTest
         {
             Program p = new Program();
             p.InsertDiscInColumn(1);
-            
+
             Assert.AreEqual(Program.Yellow, p.GetCurrentGamer());
+        }
+
+        [TestMethod]
+        public void VerifyWinnerOnDiscsAreConnectedHorizontally()
+        {
+            Program p = new Program();
+            p.InsertDiscInColumn(1);
+            p.InsertDiscInColumn(1);
+            p.InsertDiscInColumn(2);
+            p.InsertDiscInColumn(2);
+            p.InsertDiscInColumn(3);
+            p.InsertDiscInColumn(3);
+
+            Assert.AreEqual(string.Empty, p.GetWinner());
+            p.InsertDiscInColumn(4);
+            Assert.AreEqual("R", p.GetWinner());
+        }
+
+        [TestMethod]
+        public void VerifyWinnerOnDiscsAreConnectedVertically()
+        {
+            Program p = new Program();
+            p.InsertDiscInColumn(1);
+            p.InsertDiscInColumn(2);
+            p.InsertDiscInColumn(1);
+            p.InsertDiscInColumn(2);
+            p.InsertDiscInColumn(1);
+            p.InsertDiscInColumn(2);
+
+            Assert.AreEqual(string.Empty, p.GetWinner());
+            p.InsertDiscInColumn(1);
+            Assert.AreEqual("R", p.GetWinner());
         }
     }
 }
