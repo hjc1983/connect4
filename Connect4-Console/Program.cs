@@ -102,16 +102,19 @@ namespace Connect4_Console
             return true;
         }
 
-        public int InsertDiscInColumn(int column)
+        public int InsertDiscInColumn(int col)
         {
-            int row = CountDiscsInColumn(column-1);
+            if (col <= 0 || col > BoardColumns)
+                throw new ApplicationException("Invalid input, Please enter a number between 1 and :"+ BoardColumns);
+
+            int row = CountDiscsInColumn(col - 1);
 
             if (row == BoardRows)
                 throw new ApplicationException("Column is full");
 
-            Board[row, column-1] = currentGamer;
+            Board[row, col - 1] = currentGamer;
             DisplayBoard(Board);
-            IsWinner(row, column-1);
+            GameRules(row, col - 1);
             SwitchGamer();
 
             return row;
@@ -139,21 +142,21 @@ namespace Connect4_Console
             return winner;
         }
 
-        private void IsWinner(int row, int col)
+        private void GameRules(int row, int col)
         {
-            string pattern = @".*"+ currentGamer + "{"+ DiscToWin + "}.*"; //@"{.*R{4}.*}";
+            string pattern = @".*" + currentGamer + "{" + DiscToWin + "}.*"; //@"{.*R{4}.*}";
             Regex regex = new Regex(pattern);
             StringBuilder sb = new StringBuilder();
             for (var i = 0; i < BoardRows; i++)
-            { 
+            {
                 sb.Append(Board[i, col]); //Vertical
             }
             if (regex.IsMatch(sb.ToString()))
             {
                 winner = GetCurrentGamer();
             }
-            
-            
+
+
             sb = new StringBuilder();
             for (var i = 0; i < BoardColumns; i++)
             {
@@ -163,6 +166,31 @@ namespace Connect4_Console
             {
                 winner = GetCurrentGamer();
             }
+
+            //LHS
+            int offset = Math.Min(row, col);
+            int currnetColumn = col - offset;
+            int currnetRow = row - offset;
+            sb = new StringBuilder();
+            do
+            {
+                sb.Append(Board[currnetRow++, currnetColumn++]);
+            } while (currnetRow < BoardRows && currnetColumn < BoardColumns);
+            if (regex.IsMatch(sb.ToString()))
+                winner = GetCurrentGamer();
+
+            //RHS
+            offset = Math.Min(BoardRows - 1 - row, col);
+            currnetColumn = col - offset;
+            currnetRow = row + offset;
+            sb = new StringBuilder();
+            do
+            {
+                sb.Append(Board[currnetRow--, currnetColumn++]);
+            } while (currnetColumn < BoardColumns && currnetRow >= 0);
+            if (regex.IsMatch(sb.ToString()))
+                winner = GetCurrentGamer();
+
         }
 
 
