@@ -85,22 +85,9 @@ namespace Connect4_Console
             return count;
         }
 
-        public static bool ValidateGameUserinput(string input)
+        public bool IsColumnFull(int col)
         {
-            int rows, cols;
-
-            var inputs = input.Trim().Split(' ');
-
-            if (inputs.Length != 2 || !int.TryParse(inputs[0], out rows) || !int.TryParse(inputs[1], out cols))
-            {
-                Console.WriteLine("Not a valid input, please try again.");
-                return false;
-            }
-
-            Helper.AddUpdateAppSettings("Rows", rows.ToString());
-            Helper.AddUpdateAppSettings("Columns", cols.ToString());
-
-            return true;
+            return (CountDiscsInColumn(col - 1) == BoardRows);
         }
 
         public int InsertDiscInColumn(int col)
@@ -246,8 +233,22 @@ namespace Connect4_Console
 
             while (!p.IsFinished())
             {
-                Console.Write(p.GetCurrentGamer() + ", where would you like to place your next disc?\n");
-                p.InsertDiscInColumn(Convert.ToInt32(Console.ReadLine()));
+                Console.Write(p.GetCurrentGamer() + "'s Turn. ");
+                var input = 0;
+
+                do
+                {
+                    Console.Write("Please enter a number between 1 and " + BoardColumns + ": ");
+                    input = Helper.StrToInt(Console.ReadLine());
+                } while (input < 1 || input > BoardColumns);
+
+                do
+                {
+                    Console.Write("This column is full, please enter a new integer: ");
+                    input = Helper.StrToInt(Console.ReadLine());
+                } while (p.IsColumnFull(input));
+                    
+                p.InsertDiscInColumn(input);
             }
 
             Console.WriteLine(p.GetWinner() + ", You have won!");
