@@ -35,6 +35,25 @@ namespace Connect4_Console_UnitTest
             Assert.IsTrue(p.IsFinished());
         }
 
+        [TestMethod]
+        public void VerifyConfigurationAmendment()
+        {
+            var key = "KEY1";
+            var value = "VALUE1";
+            Helper.AddUpdateAppSettings(key, value);
+            var result =  Helper.ReadSetting(key);
+            Assert.AreEqual(value, result);
+        }
+
+        [TestMethod]
+        public void VerifyConfigurationNumericInput()
+        {
+            var num = Helper.StrToInt("a");
+            Assert.AreEqual(-1, num);
+
+            num = Helper.StrToInt("5");
+            Assert.AreEqual(5, num);
+        }
 
         //[TestMethod]
         //public void ValidateGameUserinput()

@@ -14,7 +14,8 @@ namespace Connect4_Console
                 return string.IsNullOrEmpty(Helper.ReadSetting("Rows")) ? 5 : Convert.ToInt32(Helper.ReadSetting("Rows"));
             }
         }
-        public static int BoardColumns {
+        public static int BoardColumns
+        {
             get
             {
                 return string.IsNullOrEmpty(Helper.ReadSetting("Columns")) ? 5 : Convert.ToInt32(Helper.ReadSetting("Columns"));
@@ -27,7 +28,7 @@ namespace Connect4_Console
         {
             get
             {
-                return string.IsNullOrEmpty(Helper.ReadSetting("Gamer1Symbol"))? "R": Helper.ReadSetting("Gamer1Symbol");
+                return string.IsNullOrEmpty(Helper.ReadSetting("Gamer1Symbol")) ? "R" : Helper.ReadSetting("Gamer1Symbol");
             }
         }
         public static string Yellow
@@ -95,7 +96,7 @@ namespace Connect4_Console
                 Console.WriteLine("Not a valid input, please try again.");
                 return false;
             }
-            
+
             Helper.AddUpdateAppSettings("Rows", rows.ToString());
             Helper.AddUpdateAppSettings("Columns", cols.ToString());
 
@@ -105,7 +106,7 @@ namespace Connect4_Console
         public int InsertDiscInColumn(int col)
         {
             if (col <= 0 || col > BoardColumns)
-                throw new ApplicationException("Invalid input, Please enter a number between 1 and :"+ BoardColumns);
+                throw new ApplicationException("Invalid input, Please enter a number between 1 and :" + BoardColumns);
 
             int row = CountDiscsInColumn(col - 1);
 
@@ -200,7 +201,7 @@ namespace Connect4_Console
             for (int row = BoardRows - 1; row >= 0; row--)
             {
                 Console.Write("|");
-                for (int col = 0; col < BoardColumns;col++)
+                for (int col = 0; col < BoardColumns; col++)
                 {
                     Console.Write(board[row, col]);
                 }
@@ -209,36 +210,47 @@ namespace Connect4_Console
             Console.WriteLine("\n");
         }
 
+        private static void GameConfiguration()
+        {
+            Console.WriteLine("Configuration: ");
+            Console.WriteLine("=======================");
 
+            Console.Write("Enter number of Rows: ");
+            //int rows = ConfigUserInput();
+            int rows = Helper.StrToInt(Console.ReadLine());
+            if (rows >= DiscToWin)
+                Helper.AddUpdateAppSettings("Rows", rows.ToString());
+            else
+                Console.WriteLine("Sorry your input is invalid. default value is: " + BoardColumns);
+
+
+            Console.Write("Enter number of Columns: ");
+            int cols = Helper.StrToInt(Console.ReadLine());
+            if (cols >= DiscToWin)
+                Helper.AddUpdateAppSettings("Columns", cols.ToString());
+            else
+                Console.WriteLine("Sorry your input is invalid. default value is: " + BoardColumns);
+
+        }
 
         static void Main(string[] args)
         {
-
-            Console.WriteLine("let's play connect 4: <press a key to begin or '9' to config>");
-            var options= Console.ReadLine();
+            Console.WriteLine("let's play connect 4: <press a key to begin or '9' to configure>");
+            var options = Console.ReadLine();
             if (options == "9")
             {
-                Console.WriteLine("Config: ");
-                Console.WriteLine("=======================");
-                Console.Write("Enter number of rows/cols: ");
-                while (!Program.ValidateGameUserinput(Console.ReadLine()));
-
-
+                GameConfiguration();
             }
-            
-            //Console.Write("Enter number of rows/cols: ");
-            //while (!Program.ValidateGameUserinput(Console.ReadLine())) ;
 
-            //Console.WriteLine(BoardRows + " x " + BoardColumns);
             Program p = new Program();
 
             while (!p.IsFinished())
             {
-                Console.Write(p.GetCurrentGamer() +", where would you like to place your next disc?\n");
+                Console.Write(p.GetCurrentGamer() + ", where would you like to place your next disc?\n");
                 p.InsertDiscInColumn(Convert.ToInt32(Console.ReadLine()));
             }
 
-            Console.WriteLine(p.GetWinner()+ ", You have won!"); 
+            Console.WriteLine(p.GetWinner() + ", You have won!");
 
             Console.Read();
         }

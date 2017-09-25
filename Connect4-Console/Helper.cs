@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Connect4_Console
 {
-    static class Helper
+    public static class Helper
     {
         public static string ReadSetting(string key)
         {
@@ -45,6 +45,15 @@ namespace Connect4_Console
             {
                 Console.WriteLine("Error writing app settings");
             }
+        }
+
+        public static int StrToInt(string str)
+        {
+            int number;
+            if (int.TryParse(str, out number))
+                return number;
+            else
+                return -1;
         }
     }
 }
