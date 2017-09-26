@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-
 namespace Connect4_Console
 {
     public class Program
@@ -22,21 +21,21 @@ namespace Connect4_Console
                 return string.IsNullOrEmpty(Helper.ReadSetting("Columns")) ? 5 : Convert.ToInt32(Helper.ReadSetting("Columns"));
             }
         }
-        public string Red
+        private static string Red
         {
             get
             {
                 return string.IsNullOrEmpty(Helper.ReadSetting("Gamer1Symbol")) ? "R" : Helper.ReadSetting("Gamer1Symbol");
             }
         }
-        public string Yellow
+        private static string Yellow
         {
             get
             {
                 return string.IsNullOrEmpty(Helper.ReadSetting("Gamer2Symbol")) ? "Y" : Helper.ReadSetting("Gamer2Symbol");
             }
         }
-        private string Empty
+        private static string Empty
         {
             get
             {
@@ -93,19 +92,6 @@ namespace Connect4_Console
             Console.Read();
         }
 
-        public void SetupBoard()
-        {
-            _board = new string[BoardRows, BoardColumns];
-            // populating empty board       
-            for (int row = 0; row < BoardRows; row++)
-            {
-                for (int column = 0; column < BoardColumns; column++)
-                {
-                    _board[row, column] = Empty;
-                }
-            }
-        }
-
         public int CountDiscsOnBoard()
         {
             int count = 0;
@@ -121,6 +107,19 @@ namespace Connect4_Console
         public bool IsColumnFull(int col)
         {
             return (CountDiscsInColumn(col - 1) == BoardRows);
+        }
+
+        private void SetupBoard()
+        {
+            _board = new string[BoardRows, BoardColumns];
+            // populating empty board       
+            for (int row = 0; row < BoardRows; row++)
+            {
+                for (int column = 0; column < BoardColumns; column++)
+                {
+                    _board[row, column] = Empty;
+                }
+            }
         }
 
         private int CountDiscsInColumn(int column)
@@ -165,7 +164,18 @@ namespace Connect4_Console
                 return true;
             }
 
-            return CountDiscsOnBoard() == BoardRows * BoardColumns;
+            if(CountDiscsOnBoard() >= BoardRows * BoardColumns)
+            {
+                Console.WriteLine("Draw!");
+                return true;
+            }
+
+            return false;
+        }
+
+        public string GetBoard()
+        {
+            return DisplayBoard(_board);
         }
 
         public string GetWinner()
@@ -173,45 +183,32 @@ namespace Connect4_Console
             return Winner;
         }
 
-        void SwitchGamer()
+        private void SwitchGamer()
         {
             CurrentPlayer = (Red == CurrentPlayer) ? Yellow : Red;
         }
 
-        void GameRules(int row, int col)
+        private void GameRules(int row, int col)
         {
             string pattern = @".*" + CurrentPlayer + "{" + DiscToWin + "}.*"; //@"{.*R{4}.*}";
             Regex regex = new Regex(pattern);
-            StringBuilder sb = new StringBuilder();
-            for (var i = 0; i < BoardRows; i++)
-            {
-                sb.Append(_board[i, col]); //Vertical
-            }
-            if (regex.IsMatch(sb.ToString()))
-            {
-                Winner = GetCurrentGamer();
-            }
 
+            CheckVertically(col, regex);
+            CheckHorizontally(row, regex);
+            checkDiagonally(row, col, regex);
+        }
 
-            sb = new StringBuilder();
-            for (var i = 0; i < BoardColumns; i++)
-            {
-                sb.Append(_board[row, i]); //Horizontal
-            }
-            if (regex.IsMatch(sb.ToString()))
-            {
-                Winner = GetCurrentGamer();
-            }
-
+        private void checkDiagonally(int row, int col, Regex regex)
+        {
             //LHS
             int offset = Math.Min(row, col);
             int currnetColumn = col - offset;
             int currnetRow = row - offset;
-            sb = new StringBuilder();
-            do
+            var sb = new StringBuilder();
+            while (currnetRow < BoardRows && currnetColumn < BoardColumns)
             {
                 sb.Append(_board[currnetRow++, currnetColumn++]);
-            } while (currnetRow < BoardRows && currnetColumn < BoardColumns);
+            }
             if (regex.IsMatch(sb.ToString()))
                 Winner = GetCurrentGamer();
 
@@ -220,16 +217,39 @@ namespace Connect4_Console
             currnetColumn = col - offset;
             currnetRow = row + offset;
             sb = new StringBuilder();
-            do
+            while (currnetColumn < BoardColumns && currnetRow >= 0)
             {
                 sb.Append(_board[currnetRow--, currnetColumn++]);
-            } while (currnetColumn < BoardColumns && currnetRow >= 0);
+            }
             if (regex.IsMatch(sb.ToString()))
                 Winner = GetCurrentGamer();
-
         }
 
-        void DisplayBoard(string[,] board)
+        private void CheckVertically(int col, Regex regex)
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; i < BoardRows; i++)
+            {
+                sb.Append(_board[i, col]); //Vertical
+            }
+            if (regex.IsMatch(sb.ToString()))
+            {
+                Winner = GetCurrentGamer();
+            }
+        }
+        private void CheckHorizontally(int row, Regex regex)
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; i < BoardColumns; i++)
+            {
+                sb.Append(_board[row, i]); //Horizontal
+            }
+            if (regex.IsMatch(sb.ToString()))
+            {
+                Winner = GetCurrentGamer();
+            }
+        }
+        string DisplayBoard(string[,] board)
         {
             var sb = new StringBuilder();
             for (int row = BoardRows - 1; row >= 0; row--)
@@ -243,6 +263,7 @@ namespace Connect4_Console
             }
             sb.Append("\n");
             Console.Write(sb.ToString());
+            return sb.ToString();
         }
 
         static void GameConfiguration()
@@ -251,7 +272,6 @@ namespace Connect4_Console
             Console.WriteLine("=======================");
 
             Console.Write("Enter number of Rows: ");
-            //int rows = ConfigUserInput();
             int rows = Helper.ConvertToInt(Console.ReadLine());
             if (rows >= DiscToWin)
                 Helper.AddUpdateAppSettings("Rows", rows.ToString());
@@ -266,6 +286,7 @@ namespace Connect4_Console
             else
                 Console.WriteLine("Sorry your input is invalid. default value is: " + BoardColumns);
 
+            Console.WriteLine("\n");
         }
     }
 }

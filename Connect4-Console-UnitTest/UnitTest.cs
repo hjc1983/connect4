@@ -24,14 +24,14 @@ namespace Connect4_Console_UnitTest
         }
 
         [TestMethod]
-        public void IsADraw()
+        public void IsADrawGame()
         {
             Program p = new Program();
 
             for (var row = 1; row <= 5; row++)
                 for (var column = 1; column <= 5; column++)
                     p.InsertDiscInColumn(column);
-
+            
             Assert.IsTrue(p.IsFinished());
         }
 
@@ -55,18 +55,14 @@ namespace Connect4_Console_UnitTest
             Assert.AreEqual(5, num);
         }
 
-        //[TestMethod]
-        //public void ValidateGameUserinput()
-        //{
-        //    Assert.IsFalse(Program.ValidateGameUserinput("aaa"));
-        //    Assert.IsFalse(Program.ValidateGameUserinput("1 a"));
-        //    Assert.IsFalse(Program.ValidateGameUserinput("a 2"));
-        //    Assert.IsFalse(Program.ValidateGameUserinput("@ 2"));
-        //    Assert.IsFalse(Program.ValidateGameUserinput("ab  3"));
-        //    Assert.IsFalse(Program.ValidateGameUserinput("2 3 @"));
-        //    Assert.IsTrue(Program.ValidateGameUserinput(" 2 3 "));
-        //    Assert.IsTrue(Program.ValidateGameUserinput("5 5"));
-        //}
+        [TestMethod]
+        public void VerifyDisplayBoard()
+        {
+            Program p = new Program();
+            p.InsertDiscInColumn(1);
+            var output = p.GetBoard();
+            Assert.IsTrue(output.Contains("|R----|"));
+        }
 
         [TestMethod]
         [ExpectedException(typeof (Exception), "Invalid input, Please enter a number between 1 and 5")]
@@ -79,25 +75,23 @@ namespace Connect4_Console_UnitTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof (Exception), "No more room in this column.")]
-        public void ValidateInsertDiscInColumn()
+        public void VerifyRowPositionOnInsertion()
         {
             Program p = new Program();
-            p.InsertDiscInColumn(1);
-            Assert.AreEqual(1, p.CountDiscsOnBoard());
+            for (int i = 0; i < 5; i++)
+            {
+                Assert.AreEqual(i, p.InsertDiscInColumn(1));
+            }
+        }
 
-            p.InsertDiscInColumn(1);
-            Assert.AreEqual(2, p.CountDiscsOnBoard());
+        [TestMethod]
+        [ExpectedException(typeof(Exception), "No more room in this column.")]
+        public void ValidateInsertWhenColumnisFull()
+        {
+            Program p = new Program();
+            for (int i = 0; i < 9; i++)
+                p.InsertDiscInColumn(1);
 
-            p.InsertDiscInColumn(1);
-            Assert.AreEqual(3, p.CountDiscsOnBoard());
-            p.InsertDiscInColumn(1);
-            Assert.AreEqual(4, p.CountDiscsOnBoard());
-
-            p.InsertDiscInColumn(1);
-            Assert.AreEqual(5, p.CountDiscsOnBoard());
-
-            p.InsertDiscInColumn(1);
             Assert.Fail("Column is full");
         }
 
@@ -105,7 +99,7 @@ namespace Connect4_Console_UnitTest
         public void GameStartedwithRed()
         {
             Program p = new Program();
-            Assert.AreEqual(p.Red, p.GetCurrentGamer());
+            Assert.AreEqual("R", p.GetCurrentGamer());
         }
 
         [TestMethod]
@@ -114,7 +108,7 @@ namespace Connect4_Console_UnitTest
             Program p = new Program();
             p.InsertDiscInColumn(1);
 
-            Assert.AreEqual(p.Yellow, p.GetCurrentGamer());
+            Assert.AreEqual("Y", p.GetCurrentGamer());
         }
 
         [TestMethod]
@@ -127,7 +121,7 @@ namespace Connect4_Console_UnitTest
                 p.InsertDiscInColumn(i);
             }
 
-            Assert.AreEqual(string.Empty, p.GetWinner());
+            Assert.IsTrue(string.IsNullOrEmpty(p.GetWinner()));
             p.InsertDiscInColumn(4);
             Assert.AreEqual("R", p.GetWinner());
         }
@@ -141,8 +135,8 @@ namespace Connect4_Console_UnitTest
             {
                 p.InsertDiscInColumn(i);
             }
-            
-            Assert.AreEqual(string.Empty, p.GetWinner());
+
+            Assert.IsTrue(string.IsNullOrEmpty(p.GetWinner()));
             p.InsertDiscInColumn(1);
             Assert.AreEqual("R", p.GetWinner());
         }
@@ -150,39 +144,25 @@ namespace Connect4_Console_UnitTest
         [TestMethod]
         public void VerifyWinnerOnDiscsAreConnectedDiagonallyLHS()
         {
-            int[] inputs = {1, 2, 2, 3, 4, 3, 3, 4, 4, 5, 4};
-            Program p = new Program();
-            foreach (var i in inputs)
-            {
-                p.InsertDiscInColumn(i);
-            }
-            Assert.AreEqual("R", p.GetWinner());
-            /*
-             *  |OOOOO| 
-             *  |OOORO| 
-             *  |OORRO| 
-             *  |ORYYO| 
-             *  |RYYRY| 
-             */
-        }
-
-        [TestMethod]
-        public void VerifyWinnerOnDiscsAreConnectedDiagonallyRHS()
-        {
-            int[] inputs = { 3, 4, 2, 3, 2, 2, 1, 1, 1, 1 };
+            int[] inputs = { 5, 1, 2, 2, 3, 4, 3, 4, 4, 3, 2, 4 };
             Program p = new Program();
             foreach (var i in inputs)
             {
                 p.InsertDiscInColumn(i);
             }
             Assert.AreEqual("Y", p.GetWinner());
-            /*
-             *  |OOOOO| 
-             *  |YOOOO| 
-             *  |RYOOO| 
-             *  |YRYOO| 
-             *  |RRRYO| 
-             */
+        }
+
+        [TestMethod]
+        public void VerifyWinnerOnDiscsAreConnectedDiagonallyRHS()
+        {
+            int[] inputs = { 5, 4, 4, 3, 3, 2, 3, 2, 1, 2, 2 };
+            Program p = new Program();
+            foreach (var i in inputs)
+            {
+                p.InsertDiscInColumn(i);
+            }
+            Assert.AreEqual("R", p.GetWinner());
         }
     }
 }

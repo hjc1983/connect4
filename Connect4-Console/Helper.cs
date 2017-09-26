@@ -41,10 +41,8 @@ namespace Connect4_Console
                 configFile.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
             }
-            catch (ConfigurationErrorsException e)
-            {
-                Console.WriteLine("Error writing app settings" + e);
-            }
+            catch (ConfigurationErrorsException)
+            { }
         }
 
         public static int ConvertToInt(string input)
