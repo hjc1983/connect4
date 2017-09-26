@@ -48,10 +48,10 @@ namespace Connect4_Console_UnitTest
         [TestMethod]
         public void VerifyConfigurationNumericInput()
         {
-            var num = Helper.StrToInt("a");
+            var num = Helper.ConvertToInt("a");
             Assert.AreEqual(-1, num);
 
-            num = Helper.StrToInt("5");
+            num = Helper.ConvertToInt("5");
             Assert.AreEqual(5, num);
         }
 
@@ -69,7 +69,7 @@ namespace Connect4_Console_UnitTest
         //}
 
         [TestMethod]
-        [ExpectedException(typeof (ApplicationException), "Invalid input, Please enter a number between 1 and 5")]
+        [ExpectedException(typeof (Exception), "Invalid input, Please enter a number between 1 and 5")]
         public void ValidateInputWithinColumnRange()
         {
             Program p = new Program();
@@ -79,7 +79,7 @@ namespace Connect4_Console_UnitTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ApplicationException), "No more room in this column.")]
+        [ExpectedException(typeof (Exception), "No more room in this column.")]
         public void ValidateInsertDiscInColumn()
         {
             Program p = new Program();
@@ -105,7 +105,7 @@ namespace Connect4_Console_UnitTest
         public void GameStartedwithRed()
         {
             Program p = new Program();
-            Assert.AreEqual(Program.Red, p.GetCurrentGamer());
+            Assert.AreEqual(p.Red, p.GetCurrentGamer());
         }
 
         [TestMethod]
@@ -114,7 +114,7 @@ namespace Connect4_Console_UnitTest
             Program p = new Program();
             p.InsertDiscInColumn(1);
 
-            Assert.AreEqual(Program.Yellow, p.GetCurrentGamer());
+            Assert.AreEqual(p.Yellow, p.GetCurrentGamer());
         }
 
         [TestMethod]

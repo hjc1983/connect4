@@ -41,16 +41,16 @@ namespace Connect4_Console
                 configFile.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
             }
-            catch (ConfigurationErrorsException)
+            catch (ConfigurationErrorsException e)
             {
-                Console.WriteLine("Error writing app settings");
+                Console.WriteLine("Error writing app settings" + e);
             }
         }
 
-        public static int StrToInt(string str)
+        public static int ConvertToInt(string input)
         {
             int number;
-            if (int.TryParse(str, out number))
+            if (int.TryParse(input, out number))
                 return number;
             else
                 return -1;
